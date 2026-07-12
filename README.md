@@ -51,6 +51,15 @@ Existing productivity tools lack comprehensive integration and may not incorpora
 
 ---
 
+# Team Members
+
+- Lekhyasree Medarametla - [Github](https://github.com/Lekhya25)
+- Nilaya Reddy Metta - [Github](https://github.com/nilaya325)
+- Parineetha KR - [Github](https://github.com/Parineethakr)
+- Prachita Chauhan - [Github](https://github.com/Prachita05)
+
+---
+
 ## How to Download and Run the Project
 
 ### Prerequisites
