@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block content %}
+<section class="auth-layout"><div class="auth-aside"><span class="eyebrow">WELCOME BACK</span><h1>Your next good day starts here.</h1><p>Sign in to pick up where you left off.</p><div class="auth-aside-mark">Z</div></div>
+  <div class="auth-card"><span class="eyebrow">YOUR WORKSPACE</span><h2>Sign in</h2><p class="muted">Enter the email and password for your account.</p>
+    <form method="post" class="stack-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>Email address<input type="email" name="email" value="{{ email|default('') }}" autocomplete="email" maxlength="254" required></label>
+      <label>Password<input type="password" name="password" autocomplete="current-password" required></label>
+      <button class="button button-primary button-full" type="submit">Sign in <span>→</span></button>
+    </form>
+    <p class="auth-switch">New to Zenara? <a href="{{ url_for('auth.signup') }}">Create an account</a></p>
+  </div>
+</section>
+{% endblock %}

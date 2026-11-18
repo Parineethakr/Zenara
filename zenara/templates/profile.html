@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block title %}Your profile{% endblock %}
+{% block content %}
+<section class="page-heading"><div><span class="eyebrow">ACCOUNT</span><h1>Your profile</h1><p>Your Zenara account details.</p></div></section>
+<section class="panel profile-card"><div class="profile-avatar">{{ current_user.name[0]|upper }}</div><div><span class="eyebrow">DISPLAY NAME</span><h2>{{ current_user.name }}</h2><p>{{ current_user.email }}</p><small>Member since {{ current_user.created_at.strftime('%B %Y') }}</small></div></section>
+{% endblock %}

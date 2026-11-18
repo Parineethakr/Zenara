@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Your notes{% endblock %}
+{% block content %}
+<section class="page-heading"><div><span class="eyebrow">KEEP THE THOUGHT</span><h1>Your notes</h1><p>Collect ideas, reminders, and the things you want to remember.</p></div></section>
+<section class="notes-layout">
+  <form method="post" action="{{ url_for('productivity.add_note') }}" class="panel note-composer">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <span class="eyebrow">NEW NOTE</span><h2>Get it out of your head.</h2>
+    <label>Title <input name="title" maxlength="100" placeholder="A thought to keep"></label>
+    <label>Note <textarea name="content" rows="6" maxlength="5000" placeholder="Write a reminder, idea, or next step…" required></textarea></label>
+    <label>Card color <select name="color">{% for color in note_colors %}<option value="{{ color }}">{{ color|capitalize }}</option>{% endfor %}</select></label>
+    <button class="button button-primary" type="submit">Save note <span>→</span></button>
+  </form>
+  <div class="note-grid">
+  {% for note in notes %}
+    <article class="note-card note-{{ note.color }}"><div class="note-card-top"><span class="note-pin">✦</span><form method="post" action="{{ url_for('productivity.delete_note', note_id=note.id) }}" class="inline-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="icon-button" type="submit" aria-label="Delete {{ note.title }}">×</button></form></div><h3>{{ note.title }}</h3><p>{{ note.content }}</p><small>Updated {{ note.updated_at.strftime('%b %d, %Y') }}</small></article>
+  {% else %}
+    <div class="empty-state notes-empty"><span class="empty-mark">✎</span><h2>Your notes will live here.</h2><p>Start with a thought you don't want to lose.</p></div>
+  {% endfor %}
+  </div>
+</section>
+{% endblock %}

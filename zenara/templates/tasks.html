@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Your tasks{% endblock %}
+{% block content %}
+<section class="page-heading"><div><span class="eyebrow">MAKE A LITTLE PROGRESS</span><h1>Your tasks</h1><p>A clear next step can change the shape of your day.</p></div><span class="heading-count">{{ tasks|length }} <small>total</small></span></section>
+<section class="content-column">
+  <form method="post" action="{{ url_for('productivity.add_task') }}" class="add-row">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label class="visually-hidden" for="new-task">New task</label><input id="new-task" name="title" maxlength="160" placeholder="What would you like to get done?" required>
+    <button class="button button-primary" type="submit">Add task <span>+</span></button>
+  </form>
+  <div class="task-list">
+  {% for task in tasks %}
+    <article class="task-item {% if task.completed %}task-completed{% endif %}">
+      <form method="post" action="{{ url_for('productivity.toggle_task', task_id=task.id) }}" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button class="check-button" type="submit" aria-label="{% if task.completed %}Mark {{ task.title }} incomplete{% else %}Mark {{ task.title }} complete{% endif %}">{% if task.completed %}✓{% endif %}</button>
+      </form>
+      <div class="task-copy"><span>{{ task.title }}</span><small>Added {{ task.created_at.strftime('%b %d') }}</small></div>
+      <form method="post" action="{{ url_for('productivity.delete_task', task_id=task.id) }}" class="inline-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="icon-button" type="submit" aria-label="Delete {{ task.title }}">×</button>
+      </form>
+    </article>
+  {% else %}
+    <div class="empty-state"><span class="empty-mark">✦</span><h2>A clean slate.</h2><p>Add one thing you want to move forward.</p></div>
+  {% endfor %}
+  </div>
+</section>
+{% endblock %}

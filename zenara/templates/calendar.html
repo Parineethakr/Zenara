@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Your calendar{% endblock %}
+{% block content %}
+<section class="page-heading"><div><span class="eyebrow">MAKE A PLAN</span><h1>Your calendar</h1><p>Keep important dates and study plans together.</p></div>
+  <nav class="tool-switch calendar-switch" aria-label="Calendar view">
+    <a class="{% if view == 'month' %}active{% endif %}" href="{{ url_for('main.calendar', view='month', month=selected_month.strftime('%Y-%m')) }}" {% if view == 'month' %}aria-current="page"{% endif %}>Month</a>
+    <a class="{% if view == 'list' %}active{% endif %}" href="{{ url_for('main.calendar', view='list', sort=sort_order) }}" {% if view == 'list' %}aria-current="page"{% endif %}>List</a>
+  </nav>
+</section>
+<section class="calendar-layout">
+  <form method="post" action="{{ url_for('main.calendar') }}" class="panel event-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="view" value="{{ view }}"><input type="hidden" name="month" value="{{ selected_month.strftime('%Y-%m') }}"><input type="hidden" name="sort" value="{{ sort_order }}">
+    <span class="eyebrow">ADD TO YOUR CALENDAR</span><h2>Make a date for it.</h2>
+    <label>Event title<input name="title" maxlength="160" placeholder="Study group, exam, project…" required></label>
+    <div class="form-two"><label>Starts<input type="date" name="starts_on" required></label><label>Ends <span class="optional">optional</span><input type="date" name="ends_on"></label></div>
+    <label>Details <span class="optional">optional</span><textarea name="description" maxlength="500" rows="3" placeholder="Add a little context"></textarea></label>
+    <button class="button button-primary" type="submit">Add event <span>+</span></button>
+  </form>
+  <div class="events-column">
+    {% if view == 'month' %}
+      <section class="month-calendar panel" aria-label="{{ selected_month.strftime('%B %Y') }} calendar">
+        <header class="month-toolbar">
+          <h2>{{ selected_month.strftime('%B %Y') }}</h2>
+          <div class="month-controls">
+            <a class="today-button" href="{{ url_for('main.calendar', view='month', month=today.strftime('%Y-%m')) }}">Today</a>
+            <a class="month-arrow" href="{{ url_for('main.calendar', view='month', month=previous_month.strftime('%Y-%m')) }}" aria-label="Previous month">‹</a>
+            <a class="month-arrow" href="{{ url_for('main.calendar', view='month', month=next_month.strftime('%Y-%m')) }}" aria-label="Next month">›</a>
+          </div>
+        </header>
+        <div class="month-grid" role="grid" aria-label="Calendar days">
+          {% for weekday in ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'] %}<div class="weekday" role="columnheader">{{ weekday }}</div>{% endfor %}
+          {% for week in month_weeks %}{% for cell in week %}
+            <div class="month-day {% if cell.day.month != selected_month.month %}outside-month{% endif %} {% if cell.day == today %}is-today{% endif %}" role="gridcell" aria-label="{{ cell.day.strftime('%A, %B %d, %Y') }}">
+              <span class="day-number">{{ cell.day.day }}</span>
+              <div class="month-events">{% for event in cell.events %}<div class="month-event" title="{{ event.title }}">{{ event.title }}</div>{% endfor %}</div>
+            </div>
+          {% endfor %}{% endfor %}
+        </div>
+        {% if not events %}<p class="month-empty">No events yet. Add one using the form.</p>{% endif %}
+      </section>
+    {% else %}
+      <div class="list-heading"><div><span class="eyebrow">YOUR PLANS</span><h2>Events by date</h2></div><span class="event-total">{{ events|length }} events</span></div>
+      <div class="list-sort" aria-label="Sort events by date">
+        <span>Sort by date</span>
+        <a class="{% if sort_order == 'asc' %}active{% endif %}" href="{{ url_for('main.calendar', view='list', sort='asc') }}">Oldest first</a>
+        <a class="{% if sort_order == 'desc' %}active{% endif %}" href="{{ url_for('main.calendar', view='list', sort='desc') }}">Newest first</a>
+      </div>
+      {% for event in events %}
+        <article class="event-card"><div class="event-date"><strong>{{ event.starts_on.strftime('%d') }}</strong><span>{{ event.starts_on.strftime('%b %Y') }}</span></div><div class="event-details"><h3>{{ event.title }}</h3><p>{% if event.ends_on and event.ends_on != event.starts_on %}{{ event.starts_on.strftime('%b %d, %Y') }} – {{ event.ends_on.strftime('%b %d, %Y') }}{% else %}{{ event.starts_on.strftime('%A, %B %d, %Y') }}{% endif %}</p>{% if event.description %}<small>{{ event.description }}</small>{% endif %}</div><form method="post" action="{{ url_for('main.delete_event', event_id=event.id) }}" class="inline-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="view" value="list"><input type="hidden" name="sort" value="{{ sort_order }}"><button class="icon-button" type="submit" aria-label="Delete {{ event.title }}">×</button></form></article>
+      {% else %}
+        <div class="empty-state"><span class="empty-mark">▦</span><h2>Your calendar is open.</h2><p>Add a date when something important is coming up.</p></div>
+      {% endfor %}
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

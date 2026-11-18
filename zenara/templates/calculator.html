@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}{% if kind == 'attendance' %}Attendance calculator{% else %}CGPA calculator{% endif %}{% endblock %}
+{% block content %}
+<section class="page-heading"><div><span class="eyebrow">A LITTLE CLARITY</span><h1>{% if kind == 'attendance' %}Attendance calculator{% else %}CGPA calculator{% endif %}</h1><p>{% if kind == 'attendance' %}Check each subject against the 75% attendance mark.{% else %}Estimate your GPA using credits as weights on a 4.0 scale.{% endif %}</p></div>
+  <div class="tool-switch"><a class="{% if kind == 'attendance' %}active{% endif %}" href="{{ url_for('calculators.attendance_page') }}">Attendance</a><a class="{% if kind == 'cgpa' %}active{% endif %}" href="{{ url_for('calculators.cgpa_page') }}">CGPA</a></div>
+</section>
+<section class="calculator-layout">
+  <form method="post" action="{% if kind == 'attendance' %}{{ url_for('calculators.calculate_attendance') }}{% else %}{{ url_for('calculators.calculate_cgpa') }}{% endif %}" class="panel calculator-form" data-calculator="{{ kind }}" data-endpoint="{% if kind == 'attendance' %}{{ url_for('calculators.calculate_attendance') }}{% else %}{{ url_for('calculators.calculate_cgpa') }}{% endif %}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="list-heading"><div><span class="eyebrow">YOUR SUBJECTS</span><h2>Enter the details</h2></div><span class="input-caption">5 subjects</span></div>
+    {% if kind == 'attendance' %}
+      <div class="calc-table calc-attendance"><div class="calc-table-head"><span>Subject</span><span>Total classes</span><span>Attended</span></div>
+      {% for i in range(1, 6) %}<div class="calc-row"><label class="subject-name" for="total-{{ i }}">Subject {{ i }}</label><input id="total-{{ i }}" type="number" name="total_classes_{{ i }}" min="1" max="1000" value="1" required aria-label="Subject {{ i }} total classes"><input type="number" name="classes_attended_{{ i }}" min="0" max="1000" value="0" required aria-label="Subject {{ i }} classes attended"></div>{% endfor %}</div>
+    {% else %}
+      <div class="calc-table calc-cgpa"><div class="calc-table-head"><span>Subject</span><span>Credits</span><span>Grade</span></div>
+      {% for i in range(1, 6) %}<div class="calc-row"><span class="subject-name">Subject {{ i }}</span><input type="number" name="credits_{{ i }}" min="1" max="60" value="3" required aria-label="Subject {{ i }} credits"><select name="grade_{{ i }}" aria-label="Subject {{ i }} grade"><option>A</option><option>B</option><option>C</option><option>D</option><option>F</option></select></div>{% endfor %}</div>
+    {% endif %}
+    <button class="button button-primary" type="submit">Calculate <span>→</span></button>
+    <p class="form-note">{% if kind == 'attendance' %}Each subject needs at least one total class. Results below 75% are highlighted in red; check with your institution about permission to sit exams.{% else %}Grade points: A 4, B 3, C 2, D 1, F 0. Results are weighted by course credits.{% endif %}</p>
+  </form>
+  <aside class="result-panel" aria-live="polite"><span class="eyebrow">YOUR RESULT</span><div class="result-content" data-result><span class="result-placeholder">—</span><h2>Ready when you are.</h2><p>Your calculation will appear here.</p></div></aside>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/calculators.js') }}" defer></script>{% endblock %}

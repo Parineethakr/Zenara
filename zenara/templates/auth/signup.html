@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Create your account{% endblock %}
+{% block content %}
+<section class="auth-layout"><div class="auth-aside"><span class="eyebrow">A FRESH START</span><h1>Build a little more room for focus.</h1><p>Your tasks, notes, and plans stay in your own account.</p><div class="auth-aside-mark">✦</div></div>
+  <div class="auth-card"><span class="eyebrow">GET STARTED</span><h2>Create your account</h2><p class="muted">It only takes a moment to set up your space.</p>
+    <form method="post" class="stack-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>Your name<input type="text" name="name" value="{{ name|default('') }}" autocomplete="name" maxlength="80" required></label>
+      <label>Email address<input type="email" name="email" value="{{ email|default('') }}" autocomplete="email" maxlength="254" required></label>
+      <label>Password<input type="password" name="password" autocomplete="new-password" minlength="10" maxlength="72" required><small>Use at least 10 characters.</small></label>
+      <button class="button button-primary button-full" type="submit">Create account <span>→</span></button>
+    </form>
+    <p class="auth-switch">Already have an account? <a href="{{ url_for('auth.login') }}">Sign in</a></p>
+  </div>
+</section>
+{% endblock %}

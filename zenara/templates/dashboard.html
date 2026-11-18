@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Your overview{% endblock %}
+{% block content %}
+<section class="page-heading dashboard-heading">
+  <div><span class="eyebrow">YOUR WORKSPACE</span><h1>Good to see you, {{ current_user.name }}.</h1><p>Choose one thing to move forward today.</p></div>
+  <a class="button button-primary" href="{{ url_for('productivity.tasks') }}">View my tasks <span>→</span></a>
+</section>
+<section class="stat-grid" aria-label="Your workspace summary">
+  <article class="stat-card"><span class="stat-icon stat-icon-lilac">✓</span><span class="stat-label">Open tasks</span><strong>{{ open_tasks }}</strong><a href="{{ url_for('productivity.tasks') }}">Keep them moving →</a></article>
+  <article class="stat-card"><span class="stat-icon stat-icon-green">✎</span><span class="stat-label">Notes saved</span><strong>{{ note_count }}</strong><a href="{{ url_for('productivity.notes') }}">Open your notes →</a></article>
+  <article class="stat-card"><span class="stat-icon stat-icon-yellow">▦</span><span class="stat-label">Upcoming events</span><strong>{{ upcoming_count }}</strong><a href="{{ url_for('main.calendar') }}">Check your calendar →</a></article>
+</section>
+<section class="dashboard-lower">
+  <article class="panel welcome-panel"><span class="eyebrow">A THOUGHT FOR TODAY</span><h2>Progress is built<br>one focused moment<br>at a time.</h2><p>Pick a small next step. You can do more once you begin.</p><a class="button button-dark" href="{{ url_for('main.pomodoro') }}">Start a focus session <span>→</span></a></article>
+  <div class="quick-links"><span class="eyebrow">YOUR TOOLKIT</span>
+    <a class="quick-link" href="{{ url_for('main.calendar') }}"><span class="quick-icon">▦</span><span><b>Calendar</b><small>Plan a date to look forward to</small></span><span class="quick-arrow">↗</span></a>
+    <a class="quick-link" href="{{ url_for('calculators.attendance_page') }}"><span class="quick-icon">％</span><span><b>Attendance calculator</b><small>Know where each subject stands</small></span><span class="quick-arrow">↗</span></a>
+    <a class="quick-link" href="{{ url_for('calculators.cgpa_page') }}"><span class="quick-icon">✳</span><span><b>CGPA calculator</b><small>Estimate your weighted GPA</small></span><span class="quick-arrow">↗</span></a>
+  </div>
+</section>
+{% endblock %}

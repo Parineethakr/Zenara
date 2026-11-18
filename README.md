@@ -1,113 +1,123 @@
-# Zenara: Crafting Success One Productive Moment at a Time
+# Zenara
 
-Zenara is a comprehensive productivity tool designed to integrate various essential features into a singular platform. It aims to enhance productivity by providing a seamless experience that combines task management, collaboration, and innovative productivity enhancements.
+Zenara is a personal study workspace for planning work and making room to focus. It brings together a task list, personal notes, a calendar, a browser-based Pomodoro timer, and two academic calculators.
 
-Watch demo [here](https://github.com/Lekhya25/Zenara/blob/main/Zenara_DemoVideo_compressed.mp4)
-
-
-## Problem Statement
-
-Existing productivity tools lack comprehensive integration and may not incorporate essential features like a Pomodoro timer, hindering users' ability to tailor their workspace for optimal productivity and focus.
+See the [original project walkthrough](Zenara_DemoVideo_compressed.mp4).
 
 ## Features
 
-- **Pomodoro Timer**
-  - Start, pause, resume, and customize work/break lengths
-  - Sound notifications
-- **Calendar Scheduling**
-  - Add, view, and manage events
-- **To-Do List**
-  - Add, edit, delete tasks
-- **Attendance Calculator**
-  - Calculate and manage attendance
-- **CGPA Calculator**
-  - Calculate CGPA with intuitive forms
-- **Notes**
-  - Add, view, and manage notes
-- **User Authentication**
-  - Secure login, signup, and logout functionalities
+- Account signup and login with bcrypt password hashing, CSRF protection, secure session settings, and authentication rate limits.
+- Tasks, notes, and calendar events stored in SQLite and scoped to the signed-in account.
+- Attendance calculator with input validation and the 75% threshold.
+- Credit-weighted CGPA estimate on a 4.0 scale (A = 4, B = 3, C = 2, D = 1, F = 0).
+- Pomodoro focus and break intervals that run in the browser, with adjustable durations, saved preferences, and a generated browser chime.
+- Responsive HTML/CSS interface with accessible labels and status messages.
 
+## Architecture
 
-## Future Work
+```mermaid
+flowchart LR
+  Browser[Browser: templates, CSS, JavaScript]
+  Factory[Flask app factory and shared security]
+  Auth[Authentication blueprint]
+  Main[Dashboard, calendar, profile, timer]
+  Productivity[Tasks and notes]
+  Calculators[Attendance and CGPA]
+  ORM[Flask-SQLAlchemy models]
+  DB[(SQLite database)]
+  LocalTimer[Browser timer and local settings]
 
-- User Feedback and Analytics
-- Mobile Responsiveness
-- Integration with Calendar Apps
-- Customizable Themes
-- Progress Tracking
-- Community and Support
+  Browser -->|HTTP forms| Factory
+  Factory --> Auth
+  Factory --> Main
+  Factory --> Productivity
+  Factory --> Calculators
+  Auth --> ORM
+  Main --> ORM
+  Productivity --> ORM
+  ORM --> DB
+  Main -. timer page .-> LocalTimer
+```
 
-## References
+The application is created by `zenara.create_app()` and exposed for Flask and WSGI by `app.py`. Routes are grouped in blueprints. Shared account and study records are relational models; the timer stays in the browser and does not create shared server state.
 
-- [Mozilla Developer Network (MDN)](https://developer.mozilla.org/en-US/docs/Learn/CSS)
-- [W3Schools](https://www.w3schools.com)
-- [GeeksforGeeks](https://www.geeksforgeeks.org/html-complete-guide/)
-- [Stack Overflow](https://stackoverflow.com/tags/html/info)
-- [Python Tutorial](https://www.pythontutorial.net/python-concurrency/python-threading/)
-- [DataCamp](https://www.datacamp.com/tutorial/sqlalchemy-tutorial-examples)
-- [Real Python](https://realpython.com/intro-to-python-threading/)
-- [FullCalendar](https://fullcalendar.io/)
-- [Bootstrap](https://getbootstrap.com/)
+## Tech stack
 
----
+- **Backend:** Python 3.10+, Flask 3.x, Flask blueprints
+- **Database:** SQLite, Flask-SQLAlchemy, SQLAlchemy 2.x, Flask-Migrate/Alembic schema revisions
+- **Security:** bcrypt, Flask-WTF CSRF protection, Flask-Limiter
+- **Frontend:** Jinja templates, semantic HTML, responsive CSS, vanilla JavaScript
+- **Production server:** Gunicorn on Unix-like hosts; Flask's built-in server is for local development only
 
-# Team Members
+## Run locally
 
-- Lekhyasree Medarametla - [Github](https://github.com/Lekhya25)
-- Nilaya Reddy Metta - [Github](https://github.com/nilaya325)
-- Parineetha KR - [Github](https://github.com/Parineethakr)
-- Prachita Chauhan - [Github](https://github.com/Prachita05)
+Use Python 3.10 or newer.
 
----
+```powershell
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
 
-## How to Download and Run the Project
+Replace `ZENARA_SECRET_KEY` in `.env` with a randomly generated value. For example, run `python -c "import secrets; print(secrets.token_hex(32))"` and copy its output. Then initialize the database and start the development server:
 
-### Prerequisites
+```powershell
+flask --app app db upgrade
+flask --app app run
+```
 
-- Python 3.x
-- pip (Python package installer)
-- Git
+Open `http://127.0.0.1:5000` and create an account. The default SQLite database lives at `instance/zenara.db`; the `instance` folder is ignored by Git.
 
-### Instructions
+On macOS or Linux, activate the environment with `source .venv/bin/activate`. The same `flask --app app db upgrade` and `flask --app app run` commands apply.
 
-1. **Clone the Repository**
+## Production configuration
 
-   Open your terminal or command prompt and run the following command to clone the repository:
+Set `ZENARA_ENV=production`, a stable high-entropy `ZENARA_SECRET_KEY`, a database URL, and `ZENARA_RATE_LIMIT_STORAGE_URI` to a shared store such as Redis. Run behind HTTPS and set `ZENARA_COOKIE_SECURE=1`. Do not enable `ZENARA_DEBUG` in production. A multi-worker deployment must use the same signing key and shared rate-limit storage for every worker.
 
-   ```bash
-   git clone https://github.com/Lekhya25/zenara.git
-   cd zenara
+For a basic Unix deployment, apply pending migrations during release, then run:
 
-2. **Create a Virtual Environment**
+```sh
+flask --app app db upgrade
+gunicorn --bind 0.0.0.0:8000 --workers 2 app:app
+```
 
-    It's a good practice to create a virtual environment for your project. Run the following commands:
+Database schema changes are versioned under `migrations/`; review generated revisions before applying them. SQLite is suitable for local use and modest single-instance traffic. Use a managed database for a larger multi-instance deployment.
 
-   ```bash
-   python -m venv venv
-   source venv/bin/activate      # On Windows, use `venv\Scripts\activate`
+## Run tests
 
-3. **Install Dependencies**
+Install the development dependencies and run the test suite from the project root:
 
-      Install the required Python packages using pip:
+```sh
+python -m pip install -r requirements-dev.txt
+python -m pytest
+```
 
-      ```bash
-      pip install -r requirements.txt
-      
-4. **Set Up the Database**
+The tests cover signup and login behavior, protected pages, calculator results and input validation, and task ownership. The data-isolation test verifies that one account cannot view, toggle, or delete another account's tasks.
 
-      If you're using SQLite (as indicated), the database should be created automatically. If using another database like MySQL, ensure you update the SQLALCHEMY_DATABASE_URI in config.py accordingly and create the necessary database.
+## Import old JSON data
 
-5. **Run the Application**
+The original `tasks.json` and `notes.json` files are retained as source data and are not read during normal app use. If you want to import those shared demo records into one empty account, create that account, run `flask --app app import-legacy`, and enter its email address. The command leaves the original JSON files untouched and prevents repeat imports into accounts with existing study data. Import only into the intended account because the old files did not record an owner.
 
-    Start the Flask application by running:
+## Project structure
 
-    ```bash
-    flask run
-    
-6. **Access the Application**
+```text
+app.py                    WSGI entry point
+zenara/
+  __init__.py             app factory, configuration, security headers, CLI commands
+  auth.py                 signup, login, logout
+  calculators.py          validated calculator endpoints
+  extensions.py           database and CSRF extensions
+  main.py                 dashboard, calendar, profile, focus timer
+  models.py               user, task, note, and event models
+  productivity.py         user-scoped tasks and notes
+  security.py             authentication decorator
+  static/                 CSS and browser JavaScript
+  templates/              Jinja pages
+migrations/                versioned database schema changes
+instance/                 local SQLite database (not committed)
+```
 
-      Open your web browser and go to http://127.0.0.1:5000 to access Zenara.
+## Contribution notes
 
-## Notes
- * Make sure to keep your virtual environment activated whenever you are working on the project.
- * If you face any issues, check the error messages in the terminal for guidance.
+The previous README names Lekhyasree Medarametla, Nilaya Reddy Metta, Parineetha KR, and Prachita Chauhan. A legacy sample note also names Manvi. Confirm the contributor list and document each person's own work before publishing or describing this as a team project on a resume.

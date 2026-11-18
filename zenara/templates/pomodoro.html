@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Focus timer{% endblock %}
+{% block content %}
+<section class="page-heading"><div><span class="eyebrow">ONE THING AT A TIME</span><h1>Focus timer</h1><p>Set a gentle rhythm between focused work and proper breaks.</p></div></section>
+<section class="timer-layout" data-pomodoro>
+  <div class="timer-panel"><span class="eyebrow" data-phase-label>READY WHEN YOU ARE</span><div class="timer-display" data-time aria-live="off">25:00</div><p class="timer-subtitle" data-round>Make a little room for focus.</p>
+    <div class="timer-actions"><button class="button button-primary button-large" type="button" data-action="start">Start focus <span>▶</span></button><button class="button button-secondary" type="button" data-action="pause" disabled>Pause</button><button class="button button-quiet" type="button" data-action="reset">Reset</button></div>
+    <p class="timer-status" data-status aria-live="polite">Your timer runs in this browser tab.</p>
+  </div>
+  <form class="panel timer-settings" data-settings>
+    <span class="eyebrow">MAKE IT YOURS</span><h2>Session lengths</h2>
+    <label>Focus interval <span><input name="work" type="number" min="1" max="180" value="25" required> minutes</span></label>
+    <label>Short break <span><input name="short" type="number" min="1" max="60" value="5" required> minutes</span></label>
+    <label>Long break <span><input name="long" type="number" min="1" max="90" value="15" required> minutes</span></label>
+    <label>Long break after <span><input name="rounds" type="number" min="2" max="12" value="4" required> focus intervals</span></label>
+    <p class="form-note">A soft browser chime plays when an interval ends. Your settings and timer stay on this device.</p>
+  </form>
+</section>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/pomodoro.js') }}" defer></script>{% endblock %}

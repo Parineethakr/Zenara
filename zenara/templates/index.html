@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}A calmer way to get things done{% endblock %}
+{% block content %}
+<section class="hero">
+  <div class="hero-copy">
+    <span class="eyebrow"><span class="eyebrow-dot"></span> Your student life, in one place</span>
+    <h1>Make space for<br><span>what matters.</span></h1>
+    <p class="hero-lede">Plan your week, capture the little things, and find your focus. Zenara brings your everyday study tools together in a simple workspace.</p>
+    <div class="hero-actions">
+      <a class="button button-primary button-large" href="{{ url_for('auth.signup') }}">Create your free account <span aria-hidden="true">→</span></a>
+      <a class="text-link" href="{{ url_for('auth.login') }}">I already have an account</a>
+    </div>
+    <div class="hero-proof"><span class="proof-avatars" aria-hidden="true"><i>Z</i><i>+</i><i>✦</i></span><span>A little more clarity, every day.</span></div>
+  </div>
+  <div class="hero-art" aria-hidden="true">
+    <div class="sun-wash"></div>
+    <div class="mock-window">
+      <div class="mock-top"><span class="mock-dots"><i></i><i></i><i></i></span><span>your workspace</span><span class="mock-avatar">Z</span></div>
+      <div class="mock-body">
+        <div class="mock-greeting"><span class="eyebrow">MONDAY, YOUR WAY</span><strong>One step at a time.</strong></div>
+        <div class="mock-progress"><span>Today's focus</span><b>2 of 4 tasks</b><i><em></em></i></div>
+        <div class="mock-task done"><span>✓</span><del>Review lecture notes</del><small>Study</small></div>
+        <div class="mock-task"><span></span><strong>Prepare for lab</strong><small>Today</small></div>
+        <div class="mock-task"><span></span><strong>Take a short break</strong><small>Focus</small></div>
+        <div class="mock-timer"><div class="timer-ring"><span>25:00</span></div><div><b>Time to focus</b><small>A fresh session is waiting</small></div><span class="timer-play">▶</span></div>
+      </div>
+    </div>
+    <div class="floating-note"><span>✦</span><div><b>Small wins add up</b><small>Keep your momentum going.</small></div></div>
+  </div>
+</section>
+
+<section class="feature-section">
+  <div class="section-heading"><span class="eyebrow">A toolkit for your day</span><h2>Less juggling.<br><span>More doing.</span></h2><p>Keep the practical stuff close, so you can spend your energy on the work itself.</p></div>
+  <div class="feature-grid">
+    <article class="feature-card feature-lilac"><span class="feature-icon">◷</span><h3>Find your focus</h3><p>Work in focused intervals, take a breather, and get back to it with a simple Pomodoro timer.</p><a href="{{ url_for('auth.signup') }}">Get started <span>→</span></a></article>
+    <article class="feature-card feature-yellow"><span class="feature-icon">✓</span><h3>Keep plans moving</h3><p>Collect tasks and calendar events in your own space and see what deserves attention next.</p><a href="{{ url_for('auth.signup') }}">Get started <span>→</span></a></article>
+    <article class="feature-card feature-green"><span class="feature-icon">✎</span><h3>Make the numbers clear</h3><p>Quickly work out attendance percentages and credit-weighted GPA for your subjects.</p><a href="{{ url_for('auth.signup') }}">Get started <span>→</span></a></article>
+  </div>
+</section>
+{% endblock %}
